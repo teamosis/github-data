@@ -1,0 +1,85 @@
+{{ define "main" }}
+
+<div class="loader">
+  <div class="icon">
+    <i class="fas fa-spinner fa-pulse"></i>
+  </div>
+  <span>Hey buddy, be patient 💪. <br> let me load some stuff..</span>
+</div>
+
+<div class="api-error error d-none">
+  <span>Please use a VPN network. <br> Github API rate limit exceeded..</span>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<section class="section">
+  <div class="container">
+    <div class="row gy-4">
+      <div class="col-12">
+        <div id="sorts" class="button-group d-flex justify-content-center">
+          <button class="button is-checked" data-sort-by="original-order">a-z</button>
+          <button class="button" data-sort-by="forks">Forks</button>
+          <button class="button" data-sort-by="stars">Stars</button>
+          <button class="button" data-sort-by="last_commit">Last Commit</button>
+        </div>
+      </div>
+    </div>
+    <div class="row g-4 g-xl-5 mt-3 grid">
+      {{range $i, $e:= site.RegularPages}}
+      {{$github := (print "https://api.github.com/repos/" .Params.github) }}
+      <div class="col-lg-3 col-md-4 col-sm-6 element-item">
+        <div class="block rounded-3 p-2" style="background-color:#fff;box-shadow: 0 15px 50px 10px rgba(0, 0, 0, .05);">
+          <a target="_blank" href="{{.Permalink}}">
+            <img class="rounded-3 mb-1" src="images/{{.Params.github | urlize}}.jpg" alt="thumbnail">
+          </a>
+          <div class="p-3">
+            <p class="mb-0 lead fw-bold"><strong class="name-{{$i}}"></strong></p>
+            <span class="mb-0">Forks: <strong class="forks forks-{{$i}}"></strong></span> -
+            <span class="mb-0">Stars: <strong class="stars stars-{{$i}}"></strong></span>
+            <p class="mb-0 small mt-2"><strong>Last Commit: <span class="last_commit created_at-{{$i}}"></span> </strong> </p>
+            <p class="mb-0 small"><strong>Created Date: <span class="updated_at-{{$i}}"></span> </strong> </p>
+    
+            <div id="sorts" class="button-group d-flex justify-content-center mt-3 mb-0">
+              <a class="btn btn-primary w-100 me-1" href="{{.Permalink}}">ReadMe</a>
+              <a class="btn btn-secondary w-100 ms-1 html_url-{{$i}}" target="_blank" href="">Github</a>
+            </div>
+          </div>
+        </div>
+        <script>
+          $.getJSON( {{$github}}, function( data ) {
+            $('.name-{{$i}}').html(data.name);
+            $('.forks-{{$i}}').html(data.forks);
+            $('.stars-{{$i}}').html(data.stargazers_count);
+            $('.html_url-{{$i}}').attr('href', data.html_url);
+      
+            var ca = new Date(data.created_at);
+            var ca_date = ca.getDate();
+            var ca_month = ca.getMonth();
+            ca_month++;
+            var ca_year = ca.getFullYear();
+            $('.created_at-{{$i}}').html( ca_date + "/" + ca_month + "/" + ca_year);
+            
+            var ua = new Date(data.updated_at);
+            var ua_date = ua.getDate();
+            var ua_month = ua.getMonth();
+            ua_month++;
+            var ua_year = ua.getFullYear();
+            $('.updated_at-{{$i}}').html( ua_date + "/" + ua_month + "/" + ua_year);
+          }).fail(function() {
+            $('.api-error').removeClass('d-none');
+            $('.loader').addClass('d-none');
+            $('.block').addClass('disable');
+            $('.button-group').addClass('disable');
+          });
+        </script>
+      </div>
+      {{end}}
+    </div>
+  </div>
+</section>
+
+
+
+
+{{ end }}

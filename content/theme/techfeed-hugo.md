@@ -1,0 +1,3 @@
+---
+github: gethugothemes/techfeed-hugo
+---

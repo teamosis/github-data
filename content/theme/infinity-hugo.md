@@ -1,0 +1,3 @@
+---
+github: gethugothemes/infinity-hugo
+---

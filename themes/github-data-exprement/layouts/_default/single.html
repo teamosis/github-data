@@ -1,0 +1,43 @@
+{{ define "main" }}
+
+<div class="loader">
+  <div class="icon">
+    <i class="fas fa-spinner fa-pulse"></i>
+  </div>
+  <span>Hey buddy, be patient 💪. <br> let me load some stuff..</span>
+</div>
+
+<div class="api-error error d-none">
+  <span>Please use a VPN network. <br> Github API rate limit exceeded..</span>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+{{ $readme := (print "https://api.github.com/repos/" .Params.github "/contents/README.md") }}
+
+<script>
+  $.getJSON( {{$readme}}, function( data ) {
+    var dec = window.atob(data.content);
+    document.getElementById('markdown-body').innerHTML = marked(dec);
+  }).fail(function() {
+    $('.api-error').removeClass('d-none');
+    $('.loader').addClass('d-none');
+    $('.body').addClass('disable');
+  });
+</script>
+
+<section class="section">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 mb-5">
+        <a href="{{/}}" class="btn btn-primary"><i class="fas fa-history"></i> Go Back</a>
+      </div>
+      <div class="col-lg-12">
+        <div class="markdown-body" id="markdown-body"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{ end }}

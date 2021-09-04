@@ -1,0 +1,32 @@
+############# English navigation ##############
+
+# main menu
+[[main]]
+name = "Home"
+url = "/"
+weight = 1
+
+[[main]]
+name = "Portfolio"
+url = "portfolio"
+weight = 2
+
+[[main]]
+weight = 3
+name = "Pages"
+hasChildren = true
+
+  [[main]]
+  parent = "Pages"
+  name = "Career"
+  url = "career"
+
+  [[main]]
+  parent = "Pages"
+  name = "Blog"
+  url = "blog"
+  
+[[main]]
+name = "Contact"
+url = "contact"
+weight = 4

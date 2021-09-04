@@ -1,0 +1,3 @@
+---
+github: gethugothemes/restaurant-hugo
+---

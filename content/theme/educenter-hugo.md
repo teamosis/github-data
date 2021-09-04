@@ -1,0 +1,3 @@
+---
+github: themefisher/educenter-hugo
+---

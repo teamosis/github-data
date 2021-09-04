@@ -1,0 +1,50 @@
+/* Button style */
+.btn {
+  font-size: 0.9rem;
+  font-family: $font-primary;
+  text-transform: capitalize;
+  padding: .7em 1em;
+  border: 0;
+  position: relative;
+  z-index: 1;
+  transition: .2s ease;
+  background-image: linear-gradient( to bottom, hsla(0, 0%, 0%, 0), hsla(0, 0%, 0%, 0.2) );
+
+  &:hover,
+  &:active,
+  &.active,
+  &:focus,
+  &.focus {
+    outline: 0;
+    box-shadow: none !important;
+  }
+}
+
+.btn-primary {
+  background-color: $color-primary;
+  color: $white;
+
+  &:hover,
+  &:active,
+  &.active,
+  &:focus,
+  &.focus {
+    background-color: darken($color-primary, 3) !important;
+  }
+}
+
+.btn-outline-primary {
+  background-color: transparent;
+  color: $text-color;
+  border-color: $color-primary;
+
+  &:hover,
+  &:active,
+  &.active,
+  &:focus,
+  &.focus {
+    background-color: $color-primary !important;
+    border-color: $color-primary !important;
+    color: $white;
+  }
+}

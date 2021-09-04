@@ -1,0 +1,138 @@
+<!-- navigation -->
+<header class="{{if site.Params.navbar_fixed}}sticky-top{{end}} navigation">
+  <div class="container">
+    <!-- navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <!-- navbar brand/logo -->
+      <a class="navbar-brand" href="{{ site.BaseURL | relLangURL }}">
+        {{ $logoPath:= site.Params.logo }}
+        {{ $logoWidth:= replace site.Params.logo_width "px" "x" }}
+
+        <!-- checking logo existance -->
+        {{ if $logoPath }}
+        {{ if fileExists (add `assets/` $logoPath) }}
+        {{ $logo:= resources.Get $logoPath }}
+
+        <!-- checking gif -->
+        {{ $logoExt := path.Ext $logo }}
+        {{ if eq $logoExt ".gif" }}
+        {{ .Scratch.Set "logo" ($logo.Resize $logoWidth).RelPermalink }}
+        <!-- checking svg -->
+        {{ else if eq $logoExt ".svg"}}
+        {{ .Scratch.Set "logo" $logo.RelPermalink }}
+        <!-- logo fallback for svg -->
+        {{ .Scratch.Set "logo_fallback" $logo.RelPermalink }}
+        {{ else }}
+        <!-- logo processing to webp -->
+        {{ $logoDefaultWidth:= add (string $logo.Width) "x"}}
+        {{ $logoWidth:= $logoWidth | default $logoDefaultWidth }}
+        {{ $options := add (string $logoWidth) " webp" }}
+        {{ .Scratch.Set "logo" ($logo.Resize $options).RelPermalink }}
+        <!-- logo fallback -->
+        {{ .Scratch.Set "logo_fallback" ($logo.Resize $logoWidth).RelPermalink }}
+        {{ end }}
+
+        <img loading="prelaod" decoding="async" class="img-fluid" {{if ne $logoExt `.svg`}}
+          width="{{$logoWidth | default $logo.Width}}" height="{{$logo.Height}}" {{end}} src="{{.Scratch.Get `logo`}}"
+          alt="{{ site.Title }}" onerror="this.onerror=null;this.src='{{.Scratch.Get `logo_fallback`}}'">
+        {{ else }}
+        <strong class="text-danger">`{{$logoPath}}` doesn't exist</strong>
+        {{ end }} <!-- / checking logo existance -->
+        <!-- logo text -->
+        {{ else if site.Params.logo_text }}
+        {{ site.Params.logo_text | markdownify }}
+        <!-- logo title -->
+        {{ else }}
+        {{ site.Title | markdownify }}
+        {{ end }}
+      </a>
+
+      <!-- navbar toggler -->
+      <button aria-label="navbar toggler" class="navbar-toggler border-0 h3" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <div class="collapse navbar-collapse text-center" id="navigation">
+        <ul class="navbar-nav ms-auto">
+          <!-- menu active -->
+          {{ $currentPage := . }}
+          {{ range site.Menus.main }}
+          {{ $menuURL := .URL | absLangURL }}
+          {{ $pageURL:= $currentPage.Permalink | absLangURL }}
+          {{ $active := eq $menuURL $pageURL }}
+          {{ if .HasChildren }}
+          <li class="nav-item dropdown 
+          {{ range .Children }}
+          {{ $childURL := .URL | absLangURL }}
+          {{ $active := eq $childURL $pageURL }}
+          {{ if $active }}active{{ end }}
+          {{ end }}">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
+              {{ .Name }}
+            </a>
+            <div class="dropdown-menu">
+              {{ range .Children }}
+              {{ $childURL := .URL | absLangURL }}
+              {{ $active := eq $childURL $pageURL }}
+              <a class="dropdown-item {{ if $active }}active{{ end }}" {{if findRE `^http` .URL}}target="_blank"
+                rel="noopener" {{end}}
+                href="{{if findRE `^#` .URL}}{{if not $.IsHome}}{{site.BaseURL | relLangURL}}{{end}}{{.URL}}{{else if eq .URL (`/` | relLangURL) }}{{.URL}}{{else}}{{.URL | relLangURL}}{{end}}">{{ .Name }}</a>
+              {{ end }}
+            </div>
+          </li>
+          {{ else }}
+          <li class="nav-item {{ if $active }}active{{ end }}">
+            <a class="nav-link" {{if findRE `^http` .URL}}target="_blank" rel="noopener" {{end}}
+              href="{{if findRE `^#` .URL}}{{if not $.IsHome}}{{site.BaseURL | relLangURL}}{{end}}{{.URL}}{{else if eq .URL (`/` | relLangURL) }}{{.URL}}{{else}}{{.URL | relLangURL}}{{end}}">{{.Name}}</a>
+          </li>
+          {{ end }}
+          {{ end }}
+        </ul>
+
+        <!-- Language List -->
+        {{ if .IsTranslated }}
+        <select class="m-2 border-0" id="select-language" onchange="location = this.value;">
+          {{ $siteLanguages := site.Languages}}
+          {{ $pageLang := .Page.Lang}}
+          {{ range .Page.AllTranslations }}
+          {{ $translation := .}}
+          {{ range $siteLanguages }}
+          {{ if eq $translation.Lang .Lang }}
+          {{ $selected := false }}
+          {{ if eq $pageLang .Lang}}
+          <option id="{{ $translation.Language }}" value="{{ $translation.RelPermalink }}" selected>{{ .LanguageName }}
+          </option>
+          {{ else }}
+          <option id="{{ $translation.Language }}" value="{{ $translation.RelPermalink }}">{{ .LanguageName }}</option>
+          {{ end }}
+          {{ end }}
+          {{ end }}
+          {{ end }}
+        </select>
+        {{ end }}
+
+        {{ if site.Params.search }}
+        <!-- search -->
+        <div class="search px-4">
+          <button id="searchOpen" aria-label="search" class="search-btn"><i class="fas fa-search"></i></button>
+          <div class="search-wrapper">
+            <form action="{{ `search`| relLangURL }}" class="h-100">
+              <input class="search-box px-4" id="search-query" name="s" type="search" placeholder="Type & Hit Enter...">
+            </form>
+            <button id="searchClose" class="search-close"><i class="fas fa-close text-dark"></i></button>
+          </div>
+        </div>
+        {{ end }}
+
+        {{ if site.Params.navigation_button.enable }}
+        <!-- get start btn -->
+        <a href="{{ site.Params.navigation_button.link | relURL }}"
+          class="btn btn-primary ms-lg-4">{{ site.Params.navigation_button.label }}</a>
+        {{ end }}
+      </div>
+    </nav>
+  </div>
+</header>
+<!-- /navigation -->
